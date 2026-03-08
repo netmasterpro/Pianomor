@@ -1,78 +1,92 @@
-const startDate = new Date("2025-07-04T00:00:00")
+const startDate = new Date("2025-07-04T00:00:00");
 
 function actualizarTiempo(){
+let now = new Date();
+let diff = now - startDate;
 
-let now = new Date()
-
-let diff = now - startDate
-
-let dias = Math.floor(diff / (1000*60*60*24))
-
-document.getElementById("tiempo").innerText = dias + " días ❤️"
-
+let dias = Math.floor(diff/(1000*60*60*24));
+document.getElementById("tiempo").innerText = dias + " días ❤️";
 }
 
-setInterval(actualizarTiempo,1000)
+setInterval(actualizarTiempo,1000);
 
-const columns = [
-document.getElementById("col1"),
-document.getElementById("col2"),
-document.getElementById("col3"),
-document.getElementById("col4")
-]
 
-const song = document.getElementById("song")
+const song = document.getElementById("song");
 
-let progreso = 0
-let total = 500
+const game = document.querySelector(".game");
 
-function crearTecla(){
+let progreso = 0;
+let totalNotas = 400;
 
-let col = columns[Math.floor(Math.random()*4)]
+function crearFila(){
 
-let tile = document.createElement("div")
+let fila = document.createElement("div");
+fila.className = "row";
 
-tile.classList.add("tile")
+let negraIndex = Math.floor(Math.random()*4);
 
-tile.style.top = "-60px"
+for(let i=0;i<4;i++){
 
-col.appendChild(tile)
+let tecla = document.createElement("div");
+tecla.className="key";
 
-let pos = -60
+if(i==negraIndex){
+tecla.classList.add("black");
 
-let bajar = setInterval(()=>{
+tecla.onclick = ()=>{
 
-pos += 4
-tile.style.top = pos+"px"
+if(!tecla.classList.contains("clicked")){
 
-if(pos>400){
-tile.remove()
-clearInterval(bajar)
-}
+tecla.classList.add("clicked");
 
-},20)
+progreso++;
 
-tile.onclick = function(){
+let porcentaje = (progreso/totalNotas)*100;
 
-tile.remove()
+document.getElementById("barra").style.width = porcentaje+"%";
 
-progreso++
+song.currentTime=(song.duration/totalNotas)*progreso;
+song.play();
 
-let porcentaje = (progreso/total)*100
+fila.remove();
 
-document.getElementById("barra").style.width = porcentaje+"%"
+if(progreso>=totalNotas){
 
-song.currentTime = (song.duration/total)*progreso
-song.play()
+alert(`💖 Te amo mi Nai 💖
 
-if(progreso>=total){
+Gracias por estos meses tan hermosos.
 
-alert("💖 Te amo mi Nai 💖\nGracias por estos meses tan hermosos.\nEres mi niña preciosa, mi ojito de uva.\nCada día contigo es un regalo.\nSiempre quiero estar contigo.")
+Eres mi niña preciosa,
+mi ojito de uva,
+mi niña hermosa.
 
+Desde el 4 de julio de 2025
+mi vida cambió para mejor contigo.
+
+Siempre quiero seguir a tu lado.
+Te amo muchísimo ❤️`);
 }
 
 }
 
+};
+
+}else{
+
+tecla.onclick=()=>{
+
+alert("Fallaste 😢 vuelve a intentar");
+location.reload();
+
 }
 
-setInterval(crearTecla,800)
+}
+
+fila.appendChild(tecla);
+}
+
+game.prepend(fila);
+
+}
+
+setInterval(crearFila,700);
