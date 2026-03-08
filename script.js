@@ -1,92 +1,96 @@
-const startDate = new Date("2025-07-04T00:00:00");
-
-function actualizarTiempo(){
-let now = new Date();
-let diff = now - startDate;
-
-let dias = Math.floor(diff/(1000*60*60*24));
-document.getElementById("tiempo").innerText = dias + " días ❤️";
-}
-
-setInterval(actualizarTiempo,1000);
-
-
 const song = document.getElementById("song");
 
-const game = document.querySelector(".game");
+const board = document.querySelector(".game");
 
 let progreso = 0;
-let totalNotas = 400;
+let total = 300;
+let gameOver = false;
 
 function crearFila(){
 
 let fila = document.createElement("div");
 fila.className = "row";
 
-let negraIndex = Math.floor(Math.random()*4);
+let negra = Math.floor(Math.random()*4);
 
 for(let i=0;i<4;i++){
 
-let tecla = document.createElement("div");
-tecla.className="key";
+let key = document.createElement("div");
 
-if(i==negraIndex){
-tecla.classList.add("black");
+key.className="key";
 
-tecla.onclick = ()=>{
+if(i===negra){
+key.classList.add("black");
 
-if(!tecla.classList.contains("clicked")){
+key.onclick = ()=>{
 
-tecla.classList.add("clicked");
+if(gameOver) return;
 
 progreso++;
 
-let porcentaje = (progreso/totalNotas)*100;
-
-document.getElementById("barra").style.width = porcentaje+"%";
-
-song.currentTime=(song.duration/totalNotas)*progreso;
+song.currentTime=(song.duration/total)*progreso;
 song.play();
 
 fila.remove();
 
-if(progreso>=totalNotas){
+let porcentaje=(progreso/total)*100;
 
-alert(`💖 Te amo mi Nai 💖
+document.getElementById("barra").style.width=porcentaje+"%";
 
-Gracias por estos meses tan hermosos.
-
-Eres mi niña preciosa,
-mi ojito de uva,
-mi niña hermosa.
-
-Desde el 4 de julio de 2025
-mi vida cambió para mejor contigo.
-
-Siempre quiero seguir a tu lado.
-Te amo muchísimo ❤️`);
+if(progreso>=total){
+alert("💖 Te amo mi Nai 💖\nGracias por estos meses hermosos.\nEres mi niña preciosa y mi ojito de uva ❤️");
 }
 
 }
-
-};
 
 }else{
 
-tecla.onclick=()=>{
+key.onclick=()=>{
 
-alert("Fallaste 😢 vuelve a intentar");
+gameOver=true;
+
+alert("Fallaste 😢\nLa canción vuelve a empezar");
+
 location.reload();
 
 }
 
 }
 
-fila.appendChild(tecla);
-}
-
-game.prepend(fila);
+fila.appendChild(key);
 
 }
 
-setInterval(crearFila,700);
+board.prepend(fila);
+
+}
+
+function gameLoop(){
+
+if(gameOver) return;
+
+crearFila();
+
+let filas=document.querySelectorAll(".row");
+
+filas.forEach(fila=>{
+
+let pos=fila.offsetTop;
+
+fila.style.top=(pos+80)+"px";
+
+if(pos>500){
+
+gameOver=true;
+
+alert("Perdiste 😢");
+
+location.reload();
+
+}
+
+});
+
+}
+
+setInterval(gameLoop,700);
